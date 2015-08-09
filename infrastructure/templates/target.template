@@ -18,7 +18,7 @@
     "InstanceType" : {
       "Description" : "EC2 instance type",
       "Type" : "String",
-      "Default" : "t2.medium",
+      "Default" : "t2.micro",
       "ConstraintDescription" : "must be a valid EC2 instance type."
     },
 
@@ -31,14 +31,14 @@
 	"PrivateBucket" : {
       "Description" : "S3 bucket for storing credentials",
       "Type" : "String",
-      "Default" : "stelligentlabs-private",
+      "Default" : "ditcrcfcreds",
       "ConstraintDescription" : "Must be a valid S3 Bucket"
     },
 
 	"PublicBucket" : {
 	  "Description" : "S3 bucket for storing build artifacts",
       "Type" : "String",
-      "Default" : "stelligentlabs",
+      "Default" : "ditcrcfartifacts",
       "ConstraintDescription" : "Must be a valid S3 Bucket"
 	}
   },
@@ -130,7 +130,7 @@
 
 			"files" : {
 			  "/home/ec2-user/id_rsa.pub" : {
-			   "source" : { "Fn::Join" : ["", ["https://s3.amazonaws.com/", { "Ref" : "PrivateBucket" }, "/id_rsa.pub"]]},
+			   "source" : { "Fn::Join" : ["", [""https://", { "Ref" : "PrivateBucket" }, ".s3.amazonaws.com", "/id_rsa.pub"]]},
                "mode"   : "000500",
                "owner"  : "root",
                "group"  : "root",
