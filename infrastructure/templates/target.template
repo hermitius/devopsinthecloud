@@ -130,7 +130,7 @@
 
 			"files" : {
 			  "/home/ec2-user/id_rsa.pub" : {
-			   "source" : { "Fn::Join" : ["", [""https://", { "Ref" : "PrivateBucket" }, ".s3.amazonaws.com", "/id_rsa.pub"]]},
+			   "source" : { "Fn::Join" : ["", ["https://", { "Ref" : "PrivateBucket" }, ".s3.amazonaws.com", "/id_rsa.pub"]]},
                "mode"   : "000500",
                "owner"  : "root",
                "group"  : "root",
