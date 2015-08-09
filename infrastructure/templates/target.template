@@ -191,7 +191,7 @@
 		}
       },
       "Properties": {
-        "ImageId"           : { "Fn::FindInMap" : [ "AWSRegionArch2AMI", { "Ref" : "AWS::Region" },
+        "ImageId"           : { "Fn::FindInMap" : [ "AWSRegionArch2AMI", "us-west-2",
                               { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "InstanceType" }, "Arch" ] } ] },
         "KeyName"           : { "Ref" : "KeyName" },
 		"Tags" : [{ "Key"   : "Name", "Value" : "Target Environment" }],
@@ -208,7 +208,7 @@
           "/opt/aws/bin/cfn-init -s ", { "Ref" : "AWS::StackName" }, " -r WebServer ",
           "    --access-key ",  { "Ref" : "HostKeys" },
           "    --secret-key ", {"Fn::GetAtt": ["HostKeys", "SecretAccessKey"]},
-          "    --region ", { "Ref" : "AWS::Region" }, " || error_exit 'Failed to run cfn-init'\n",
+          "    --region ", "us-west-2", " || error_exit 'Failed to run cfn-init'\n",
 
 		  "# Build environment using Puppet\n",
           "puppet apply --modulepath=/home/ec2-user/modules /home/ec2-user/nodes.pp\n",
