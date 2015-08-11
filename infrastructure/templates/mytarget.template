@@ -17,7 +17,7 @@
     "InstanceType" : {
       "Description" : "EC2 instance type",
       "Type" : "String",
-      "Default" : "t1.micro",
+      "Default" : "t2.micro",
       "ConstraintDescription" : "must be a valid EC2 instance type."
     },
     
@@ -50,11 +50,27 @@
   "Mappings" : {
     "AWSInstanceType2Arch" : {
       "t1.micro"    : { "Arch" : "64" },
+      "t2.micro"    : { "Arch" : "64" },
       "m1.large"    : { "Arch" : "64" },
-      "c1.medium"   : { "Arch" : "64" }
+      "m1.xlarge"   : { "Arch" : "64" },
+      "m2.xlarge"   : { "Arch" : "64" },
+      "m2.2xlarge"  : { "Arch" : "64" },
+      "m2.4xlarge"  : { "Arch" : "64" },
+      "c1.medium"   : { "Arch" : "64" },
+      "c1.xlarge"   : { "Arch" : "64" },
+      "cc1.4xlarge" : { "Arch" : "64" },
+      "c4.large"    : { "Arch" : "64" }
     },
     "AWSRegionArch2AMI" : {
-      "us-east-1"      : { "64" : "ami-7341831a" }
+      "us-east-1"      : { "32" : "ami-7f418316", "64" : "ami-1ecae776" },
+      "us-west-1"      : { "32" : "ami-951945d0", "64" : "ami-d114f295" },
+      "us-west-2"      : { "32" : "ami-16fd7026", "64" : "ami-e7527ed7" },
+      "eu-central-1"   : { "32" : "ami-dcfa4edd", "64" : "ami-a8221fb5" },
+      "eu-west-1"      : { "32" : "ami-24506250", "64" : "ami-a10897d6" },
+      "ap-southeast-1" : { "32" : "ami-74dda626", "64" : "ami-68d8e93a" },
+      "ap-southeast-2" : { "32" : "ami-74dda626", "64" : "ami-fd9cecc7" },
+      "ap-northeast-1" : { "32" : "ami-dcfa4edd", "64" : "ami-cbf90ecb" },
+      "sa-east-1"      : { "32" : "ami-dcfa4edd", "64" : "ami-b52890a8" }
     }
   },
     
@@ -106,78 +122,82 @@
                 "puppet"   : []
               }
             },
-    
-    		"sources" : {
-    		  "/home/ec2-user/" : "https://s3.amazonaws.com/stelligentlabs/puppet.tar.gz\n"
-    		},
-    
-    		"files" : {
-    		  "/home/ec2-user/id_rsa.pub" : {
-    		  "source" : "https://s3.amazonaws.com/stelligentlabs/keypairs/id_rsa.pub",
+            
+          "sources" : {
+            "/home/ec2-user/" : "https://s3.amazonaws.com/stelligentlabs/puppet.tar.gz\n"
+          },
+            
+          "files" : {
+            "/home/ec2-user/id_rsa.pub" : {
+              "source" : "https://s3.amazonaws.com/stelligentlabs/keypairs/id_rsa.pub",
               "mode"   : "000500",
               "owner"  : "root",
               "group"  : "root"
             },
     		
-    		"/home/ec2-user/nodes.pp" : {
+        		"/home/ec2-user/nodes.pp" : {
               "content" : { "Fn::Join" : ["", [
-    		  "node default {\n",
-    		  "include system\n",
-    		  "include bundler\n",
-    		  "include passenger\n",
-    		  "include sqlite\n",
-    		  "include git\n",
-    		  "include httpd\n",
-    		"}"
-                  ]]},
-                "mode"   : "000500",
-                "owner"  : "root",
-                "group"  : "root"
-              },
-    
-    		  "/etc/httpd/conf/virtualhosts" : {
-    	        "content" : { "Fn::Join" : ["", [
-    	        "NameVirtualHost *:80\n",
-    	        "\n",
-    	        "ServerName ", { "Fn::Join" : [ ".", [ { "Ref" : "ApplicationName" }, { "Ref" : "HostedZone" }]]}, "\n",
-    	        "ServerAlias ", { "Fn::Join" : [ ".", [ { "Ref" : "ApplicationName" }, { "Ref" : "HostedZone" }]]}, "\n",
-    			"RailsEnv ", {"Ref" : "EnvironmentType"}, "\n",
-    			"DocumentRoot /var/www/rails/public\n",
-    			"\n",
-    			"AllowOverride all\n",
-    			"Options -MultiViews\n",
-    			"\n",
-    	        "\n"
-    	        ]]},
-    	            "mode"   : "000500",
-    	            "owner"  : "root",
-    	            "group"  : "root"
-    	      },
-              "/etc/httpd/conf/passenger" : {
-    	        "content" : { "Fn::Join" : ["", [
-    	          "LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-3.0.12/ext/apache2/mod_passenger.so\n",
-    	          "PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-3.0.12\n",
-    	          "PassengerRuby /usr/bin/ruby\n"
-    	        ]]},
-    	            "mode"   : "000500",
-    	            "owner"  : "root",
-    	            "group"  : "root"
-    	      }
+                "node default {\n",
+                "include system\n",
+                "include bundler\n",
+                "include passenger\n",
+                "include sqlite\n",
+                "include git\n",
+                "include httpd\n",
+          		  "}"
+              ]]},
+              "mode"   : "000500",
+              "owner"  : "root",
+              "group"  : "root"
+            },
+            
+            "/etc/httpd/conf/virtualhosts" : {
+              "content" : { "Fn::Join" : ["", [
+                "NameVirtualHost *:80\n",
+                "\n",
+                "ServerName " , { "Fn::Join" : [ ".", [ { "Ref" : "ApplicationName" }, { "Ref" : "HostedZone" }]]}, "\n",
+                "ServerAlias ", { "Fn::Join" : [ ".", [ { "Ref" : "ApplicationName" }, { "Ref" : "HostedZone" }]]}, "\n",
+                "RailsEnv "   , {"Ref" : "EnvironmentType"}, "\n",
+                "DocumentRoot /var/www/rails/public\n",
+                "\n",
+                "AllowOverride all\n",
+                "Options -MultiViews\n",
+                "\n",
+                "\n"
+              ]]},
+              "mode"   : "000500",
+              "owner"  : "root",
+              "group"  : "root"
+            },
+    	      
+            "/etc/httpd/conf/passenger" : {
+              "content" : { "Fn::Join" : ["", [
+                "LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-3.0.12/ext/apache2/mod_passenger.so\n",
+                "PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-3.0.12\n",
+                "PassengerRuby /usr/bin/ruby\n"
+              ]]},
+              "mode"   : "000500",
+              "owner"  : "root",
+              "group"  : "root"
+            }
     	    }
           }
         }
       },
+      
       "Properties": {
-        "ImageId" : { "Fn::FindInMap" : [ "AWSRegionArch2AMI", { "Ref" : "AWS::Region" },
-        { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "InstanceType" }, "Arch" ] } ] },
+        "ImageId" : { 
+          "Fn::FindInMap" : [ "AWSRegionArch2AMI", { "Ref" : "AWS::Region" },
+          {"Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "InstanceType" }, "Arch" ] } ]
+        },
         "InstanceType"   : { "Ref" : "InstanceType" },
         "SecurityGroups" : [ {"Ref" : "FrontendGroup"} ],
         "KeyName"        : { "Ref" : "KeyName" },
-    	"Tags" : [{ "Key" : "Name", "Value" : "Target Environment" }],
-    	"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
-    	"#!/bin/bash -v\n",
-    	"date > /home/ec2-user/starttime\n",
-        "yum update -y aws-cfn-bootstrap\n",
+        "Tags" : [{ "Key" : "Name", "Value" : "Target Environment" }],
+        "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+          "#!/bin/bash -v\n",
+    	    "date > /home/ec2-user/starttime\n",
+          "yum update -y aws-cfn-bootstrap\n",
     
           "# Install packages\n",
           "/opt/aws/bin/cfn-init -s ", { "Ref" : "AWS::StackName" }, " -r WebServer ",
@@ -185,24 +205,24 @@
           "    --secret-key ", {"Fn::GetAtt": ["HostKeys", "SecretAccessKey"]},
           "    --region ", { "Ref" : "AWS::Region" }, " || error_exit 'Failed to run cfn-init'\n",
     
-    			  "# Build environment using Puppet\n",
+          "# Build environment using Puppet\n",
           "puppet apply --modulepath=/home/ec2-user/modules /home/ec2-user/nodes.pp\n",
     
-    	  "# Add in virtual hosts config\n",
+    	    "# Add in virtual hosts config\n",
           "cat /etc/httpd/conf/passenger >> /etc/httpd/conf/httpd.conf\n",
-    	  "cat /etc/httpd/conf/virtualhosts >> /etc/httpd/conf/httpd.conf\n",
+    	    "cat /etc/httpd/conf/virtualhosts >> /etc/httpd/conf/httpd.conf\n",
     
-    	  "# Add Public key for passwordless authentication from Jenkins Instance\n",
-    	  "cat /home/ec2-user/id_rsa.pub >> /home/ec2-user/.ssh/authorized_keys\n",
+    	    "# Add Public key for passwordless authentication from Jenkins Instance\n",
+    	    "cat /home/ec2-user/id_rsa.pub >> /home/ec2-user/.ssh/authorized_keys\n",
     
-    	  "# Disable tty for ec2-user\n",
-    	  "echo \"Defaults:%ec2-user !requiretty\" >> /etc/sudoers\n",
-    	  "echo \"Defaults:ec2-user !requiretty\" >> /etc/sudoers\n",
+    	    "# Disable tty for ec2-user\n",
+    	    "echo \"Defaults:%ec2-user !requiretty\" >> /etc/sudoers\n",
+    	    "echo \"Defaults:ec2-user !requiretty\" >> /etc/sudoers\n",
     
-    	  "/opt/aws/bin/cfn-signal", " -e 0", " '", { "Ref" : "WaitHandle" }, "'","\n",
+    	    "/opt/aws/bin/cfn-signal", " -e 0", " '", { "Ref" : "WaitHandle" }, "'","\n",
     
-    	  "date > /home/ec2-user/stoptime"
-    	  ]]}}
+    	    "date > /home/ec2-user/stoptime"
+    	   ]]}}
       }
     },
     
