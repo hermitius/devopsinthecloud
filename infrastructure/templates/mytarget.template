@@ -266,17 +266,15 @@
   "Outputs" : {
     "InstanceIPAddress" : {
       "Value" : { "Ref" : "IPAddress" }
-      },
+    },
     
     "StackName" : {
       "Value" : { "Ref" : "AWS::StackName" }
-      },
+    },
     
     "SampleApp" : {
       "Value" : { "Fn::Join" : ["", ["http://", { "Ref" : "ApplicationName" }, ".", { "Ref" : "HostedZone" }, "/"]] },
       "Description" : "URL for newly created Sample App"
-      }
     }
   }
-
 }
